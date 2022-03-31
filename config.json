@@ -79,14 +79,14 @@
 	"plots":{
 		"bokeh_js_css_code": "CDN",
 		"logFC_genome_plot":{
-			"width": 1200,
-			"height": 250,
+			"width": 1700,
+			"height": 400,
 			"output_backend": "webgl",
 			"active_scroll": "xwheel_zoom",
 			"title": "Genome Level CNV",
-			"point_line_color": "black",
+			"point_line_color": "darkslateblue",
 			"point_off_target_color": "lightgrey",
-			"point_on_target_color": "red",
+			"point_on_target_color": "steelblue",
 			"segment_markers":{
 				"visibility": "on",
 				"segment_line_color": "orange",
@@ -108,7 +108,7 @@
 			"y_axis_label": "log2(FC)"
 		},
 		"annotation_plot":{
-			"width": 1200,
+			"width": 1700,
 			"height": 80,
 			"output_backend": "webgl",
 			"active_scroll": "xwheel_zoom",
@@ -118,14 +118,14 @@
 			"line_alpha": 0.9
 		},
 		"logFC_ind_plot":{
-			"width": 1200,
-			"height": 250,
+			"width": 1700,
+			"height": 400,
 			"output_backend": "webgl",
 			"active_scroll": "xwheel_zoom",
 			"title": "Bin Level CNV",
-			"point_line_color": "black",
+			"point_line_color": "darkslateblue",
 			"point_off_target_color": "lightgrey",
-			"point_on_target_color": "red",
+			"point_on_target_color": "steelblue",
 			"segment_markers":{
 				"visibility": "on",
 				"segment_line_color": "orange",
@@ -142,7 +142,7 @@
 			"y_axis_label": "log2(FC)"
 		},
 		"vaf_plot":{
-			"width": 1200,
+			"width": 1700,
 			"height": 150,
 			"output_backend": "webgl",
 			"active_scroll": "xwheel_zoom",
@@ -203,10 +203,10 @@
 			"line_width": 2,
 			"line_dash": "dotted",
 			"line_alpha": 0.8,
-			"text_color": "black",
-			"text_font_size": "9pt",
+			"text_color": "darkorange",
+			"text_font_size": "10pt",
 			"text_background_color": "goldenrod",
-			"text_background_alpha": 0.4,
+			"text_background_alpha": 0,
 			"text_font_style": "bold"
 		}
 	}
