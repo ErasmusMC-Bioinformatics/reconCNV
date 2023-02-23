@@ -366,33 +366,49 @@ if (options.vcf_file):
     logging.info("Reading VCF file ...")
     vcf_reader = vcf.Reader(open(options.vcf_file, 'r'))
     logging.info("Processing VCF file ...")
+    minimum_depth = config['files']['vcf_file']['thresholds']['depth']
+    depth_info_field = config['files']['vcf_file']['info_fields']['depth']
+    saf_field = config['files']['vcf_file']['info_fields']['forward_alt_reads']
+    sar_field = config['files']['vcf_file']['info_fields']['reverse_alt_reads']
+    minimum_vaf = config['files']['vcf_file']['thresholds']['low_vaf_filter']
+    maximum_vaf = config['files']['vcf_file']['thresholds']['high_vaf_filter']
+    minimum_saf = config['files']['vcf_file']['thresholds']['forward_alt_reads']
+    minimum_sar = config['files']['vcf_file']['thresholds']['reverse_alt_reads']
     for record in vcf_reader:
-        if record.INFO[config['files']['vcf_file']['info_fields']['depth']] >= \
-                config['files']['vcf_file']['thresholds']['depth'] and \
-                record.CHROM != 'X' and \
-                len(record.REF) == 1 and \
-                len(record.ALT) == 1 and \
-                len(record.ALT[0]) == 1 and \
-                ((record.INFO[config['files']['vcf_file']['info_fields']['forward_alt_reads']][0] +
-                  record.INFO[config['files']['vcf_file']['info_fields']['reverse_alt_reads']][0]) / record.INFO[
-                     config['files']['vcf_file']['info_fields']['depth']] >= config['files']['vcf_file']['thresholds'][
-                     'low_vaf_filter'] and
-                 (record.INFO[config['files']['vcf_file']['info_fields']['forward_alt_reads']][0] +
-                  record.INFO[config['files']['vcf_file']['info_fields']['reverse_alt_reads']][0]) / record.INFO[
-                     config['files']['vcf_file']['info_fields']['depth']] <= config['files']['vcf_file']['thresholds'][
-                     'high_vaf_filter']) and \
-                record.INFO[config['files']['vcf_file']['info_fields']['forward_alt_reads']][0] >= \
-                config['files']['vcf_file']['thresholds']['forward_alt_reads'] and \
-                record.INFO[config['files']['vcf_file']['info_fields']['reverse_alt_reads']][0] >= \
-                config['files']['vcf_file']['thresholds']['reverse_alt_reads']:
-            df_vaf.append({'chromosome': record.CHROM,
-                           'start': record.POS,
-                           'ref': record.REF,
-                           'alt': record.ALT[0],
-                           'DP': record.INFO[config['files']['vcf_file']['info_fields']['depth']],
-                           'AF': (record.INFO[config['files']['vcf_file']['info_fields']['forward_alt_reads']][0] +
-                                  record.INFO[config['files']['vcf_file']['info_fields']['reverse_alt_reads']][0]) /
-                                 record.INFO[config['files']['vcf_file']['info_fields']['depth']]})
+        if record.CHROM == 'X':
+            continue
+        if len(record.REF) != 1 or len(record.ALT) != 1 or len(record.ALT[0]) != 1:
+            continue
+        depth = record.INFO[config['files']['vcf_file']['info_fields']['depth']]
+        if depth < minimum_depth:
+            continue
+
+        saf = record.INFO[saf_field][0]
+        sar = record.INFO[sar_field][0]
+
+        if saf < minimum_saf:
+            continue
+
+        if sar < minimum_sar:
+            continue
+
+        alt_reads = saf + sar
+        vaf = alt_reads / depth
+
+        if vaf < minimum_vaf:
+            continue
+
+        if vaf > maximum_vaf:
+            continue
+
+        df_vaf.append({
+            'chromosome': record.CHROM if not record.CHROM.startswith("chr") else record.CHROM[3:],
+            'start': record.POS,
+            'ref': record.REF,
+            'alt': record.ALT[0],
+            'DP': depth,
+            'AF': vaf
+        })
     df_vaf = pd.DataFrame(df_vaf)
     logging.info("Successfully filtered VCF file.")
     if (not df_vaf.empty):
@@ -885,7 +901,6 @@ if (options.vcf_file and not df_vaf.empty):
                         active_tap="auto",
                         y_range=DataRange1d(bounds=(-0.05, 1.05)),
                         title=config['plots']['vaf_plot']['title'])
-
     VAF_genome.circle("genome_cumsum", "AF",
                       source=source_vaf,
                       size=config['plots']['vaf_plot']['point_size'],
@@ -1145,6 +1160,7 @@ if (options.gene_file):
 table_bin_div = Div(text="<b>Bin Data</b>")
 
 if (options.vcf_file and options.annot_file and options.gene_file and not df_vaf.empty):
+    logging.info("options.vcf_file and options.annot_file and options.gene_file and not df_vaf.empty")
     if (int_cn_flag):
         plots = gridplot([[logFC_genome], [logFC_genome_gene_track], [VAF_genome], [int_cn_genome],
                           [logFC]], toolbar_location='left', merge_tools=True)
@@ -1156,6 +1172,7 @@ if (options.vcf_file and options.annot_file and options.gene_file and not df_vaf
     final_fig = layout(children=[[plots], [fig_datatables]])
 
 elif (options.vcf_file and options.annot_file and not df_vaf.empty):
+    logging.info("options.vcf_file and options.annot_file and not df_vaf.empty")
     if (int_cn_flag):
         plots = gridplot([[logFC_genome], [logFC_genome_gene_track], [VAF_genome], [int_cn_genome],
                           [logFC]], toolbar_location='left', merge_tools=True)
@@ -1167,6 +1184,7 @@ elif (options.vcf_file and options.annot_file and not df_vaf.empty):
     final_fig = layout(children=[[plots], [fig_datatables]])
 
 elif (options.vcf_file and options.gene_file and not df_vaf.empty):
+    logging.info("options.vcf_file and options.gene_file and not df_vaf.empty")
     if (int_cn_flag):
         plots = gridplot([[logFC_genome], [VAF_genome], [int_cn_genome], [logFC]], toolbar_location='left',
                      merge_tools=True)
@@ -1178,6 +1196,7 @@ elif (options.vcf_file and options.gene_file and not df_vaf.empty):
     final_fig = layout(children=[[plots], [fig_datatables]])
 
 elif (options.annot_file and options.gene_file):
+    logging.info("options.annot_file and options.gene_file")
     if (int_cn_flag):
         plots = gridplot([[logFC_genome], [logFC_genome_gene_track], [int_cn_genome], [logFC]],
                          toolbar_location='left', merge_tools=True)
@@ -1189,6 +1208,7 @@ elif (options.annot_file and options.gene_file):
     final_fig = layout(children=[[plots], [fig_datatables]])
 
 elif (options.gene_file):
+    logging.info("options.gene_file")
     if (int_cn_flag):
         plots = gridplot([[logFC_genome], [int_cn_genome], [logFC]], toolbar_location='left',
                          merge_tools=True)
@@ -1200,6 +1220,7 @@ elif (options.gene_file):
     final_fig = layout(children=[[plots], [fig_datatables]])
 
 elif (options.annot_file):
+    logging.info("options.annot_file")
     if (int_cn_flag):
         plots = gridplot([[logFC_genome], [logFC_genome_gene_track], [int_cn_genome], [logFC]],
                          toolbar_location='left', merge_tools=True)
@@ -1211,6 +1232,7 @@ elif (options.annot_file):
     final_fig = layout(children=[[plots], [fig_datatables]])
 
 elif (options.vcf_file and not df_vaf.empty):
+    logging.info("options.vcf_file and not df_vaf.empty")
     if (int_cn_flag):
         plots = gridplot([[logFC_genome], [VAF_genome], [int_cn_genome], [logFC]], toolbar_location='left',
                      merge_tools=True)
@@ -1222,6 +1244,7 @@ elif (options.vcf_file and not df_vaf.empty):
     final_fig = layout(children=[[plots], [fig_datatables]])
 
 else:
+    logging.info("else")
     if (options.seg_file and int_cn_flag):
         plots = gridplot([[logFC_genome], [int_cn_genome], [logFC]], toolbar_location='left',
                          merge_tools=True)
