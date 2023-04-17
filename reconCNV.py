@@ -377,30 +377,23 @@ if (options.vcf_file):
     for record in vcf_reader:
         if record.CHROM == 'X':
             continue
-        if len(record.REF) != 1 or len(record.ALT) != 1 or len(record.ALT[0]) != 1:
+        if not record.REF or len(record.REF) != 1:
             continue
-        depth = record.INFO[config['files']['vcf_file']['info_fields']['depth']]
-        if depth < minimum_depth:
-            continue
+        
+        if not record.ALT or len(record.ALT) != 1 or (record.ALT[0] and len(record.ALT[0]) != 1):
+            continue 
 
-        saf = record.INFO[saf_field][0]
-        sar = record.INFO[sar_field][0]
+        depth = record.INFO["DP"]
+        sample = record.samples[0]
 
-        if saf < minimum_saf:
-            continue
-
-        if sar < minimum_sar:
-            continue
-
-        alt_reads = saf + sar
-        vaf = alt_reads / depth
-
-        if vaf < minimum_vaf:
+        vaf = sample.data.VF
+        """
+        if vaf <= minimum_vaf:
             continue
 
-        if vaf > maximum_vaf:
+        if vaf >= maximum_vaf:
             continue
-
+        """
         df_vaf.append({
             'chromosome': record.CHROM if not record.CHROM.startswith("chr") else record.CHROM[3:],
             'start': record.POS,

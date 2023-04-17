@@ -68,11 +68,11 @@
 				"reverse_alt_reads": "SAR"
 			},
 			"thresholds":{
-				"depth": 20,
+				"depth": 50,
 				"forward_alt_reads": 5,
 				"reverse_alt_reads": 5,
-				"low_vaf_filter": 0.10,
-				"high_vaf_filter": 0.90
+				"low_vaf_filter": 0,
+				"high_vaf_filter": 1
 			}
 		}
 	},
@@ -94,8 +94,8 @@
 				"segment_line_alpha": 0.9
 			},
 			"gene_markers":{
-				"visibility": "on",
-				"color": "violet"
+				"visibility": "off",
+				"color": "grey"
 			},
 			"artifact_mask":{
 				"visibility": "on",
@@ -133,8 +133,8 @@
 				"segment_line_alpha": 0.9
 			},
 			"gene_markers":{
-				"visibility": "on",
-				"color": "violet"
+				"visibility": "off",
+				"color": "grey"
 			},
 			"x_axis_label_visibility": "on",
 			"x_axis_label": "Bin Index",
@@ -143,7 +143,7 @@
 		},
 		"vaf_plot":{
 			"width": 1700,
-			"height": 150,
+			"height": 250,
 			"output_backend": "webgl",
 			"active_scroll": "xwheel_zoom",
 			"title": "SNP Allele Fractions",
@@ -171,7 +171,7 @@
 			"output_backend": "webgl",
 			"active_scroll": "xwheel_zoom",
 			"title": "Integer Copy Number",
-			"visibility":"on",
+			"visibility":"off",
 			"segment_markers":{
 				"major_segment_line_color": "black",
 				"minor_segment_line_color": "red",
