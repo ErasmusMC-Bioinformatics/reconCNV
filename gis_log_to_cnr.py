@@ -2,7 +2,6 @@ import json
 import argparse
 import csv
 
-
 def main(logratio_file, cnr_file, rs_gene):
     print("Logratio:", logratio_file)
     print("CNR Output:", cnr_file)
@@ -13,18 +12,16 @@ def main(logratio_file, cnr_file, rs_gene):
     else:
         rs_gene = {}
 
+    # so we can sort everything at the end
+    lines = {}
+
     with open(logratio_file) as logratio_handle, open(cnr_file, 'w') as cnr_handle:
         logratio_reader = csv.DictReader(
             logratio_handle,
             fieldnames=["chrom", "pos", "rs", "log2"],
             delimiter="\t"
         )
-        cnr_writer = csv.DictWriter(
-            cnr_handle,
-            fieldnames=["chromosome", "start", "end", "gene", "log2", "depth", "weight"],
-            delimiter="\t"
-        )
-        cnr_writer.writeheader()
+        
         for row in logratio_reader:
             chrom = row["chrom"]
             chrom = chrom.replace("chr", "")
@@ -36,7 +33,10 @@ def main(logratio_file, cnr_file, rs_gene):
             gene = rs_gene.get(rs, rs)
             log2 = row["log2"]
 
-            cnr_writer.writerow({
+            if chrom not in lines:
+                lines[chrom] = []
+
+            lines[chrom].append({
                 "chromosome": chrom,
                 "start": pos,
                 "end": pos,
@@ -45,6 +45,20 @@ def main(logratio_file, cnr_file, rs_gene):
                 "depth": "0.1",
                 "weight": "0.4"
             })
+
+        # sort only by chr, within chromosomes everything should still be sorted
+        chroms = [c.replace("chr", "") for c in lines.keys()]
+        chroms = sorted(chroms, key=lambda c: int(c) if c.isnumeric() else ord(c))
+
+        cnr_writer = csv.DictWriter(
+            cnr_handle,
+            fieldnames=["chromosome", "start", "end", "gene", "log2", "depth", "weight"],
+            delimiter="\t"
+        )
+        cnr_writer.writeheader()
+        for chrom in chroms:
+            for line in lines[chrom]:
+                cnr_writer.writerow(line)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
