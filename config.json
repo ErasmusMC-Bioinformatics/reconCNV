@@ -80,15 +80,15 @@
 		"bokeh_js_css_code": "CDN",
 		"logFC_genome_plot":{
 			"width": 1700,
-			"height": 400,
+			"height": 50,
 			"output_backend": "webgl",
 			"active_scroll": "xwheel_zoom",
-			"title": "Genome Level CNV",
-			"point_line_color": "darkslateblue",
-			"point_off_target_color": "lightgrey",
-			"point_on_target_color": "steelblue",
+			"title": "",
+			"point_line_color": "white",
+			"point_off_target_color": "white",
+			"point_on_target_color": "white",
 			"segment_markers":{
-				"visibility": "on",
+				"visibility": "off",
 				"segment_line_color": "orange",
 				"segment_line_width": 4,
 				"segment_line_alpha": 0.9
@@ -98,14 +98,14 @@
 				"color": "grey"
 			},
 			"artifact_mask":{
-				"visibility": "on",
+				"visibility": "off",
 				"color": "black",
 				"alpha": 0.7
 			},
-			"x_axis_label_visibility": "on",
-			"x_axis_label": "Genome Location",
-			"y_axis_label_visibility": "on",
-			"y_axis_label": "log2(FC)"
+			"x_axis_label_visibility": "off",
+			"x_axis_label": "",
+			"y_axis_label_visibility": "off",
+			"y_axis_label": ""
 		},
 		"annotation_plot":{
 			"width": 1700,
@@ -133,7 +133,7 @@
 				"segment_line_alpha": 0.9
 			},
 			"gene_markers":{
-				"visibility": "off",
+				"visibility": "on",
 				"color": "grey"
 			},
 			"x_axis_label_visibility": "on",

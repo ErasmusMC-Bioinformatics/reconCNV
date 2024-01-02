@@ -386,7 +386,7 @@ if (options.vcf_file):
         depth = record.INFO["DP"]
         sample = record.samples[0]
 
-        vaf = sample.data.VF
+        vaf = sample.data.AF
         """
         if vaf <= minimum_vaf:
             continue
@@ -734,7 +734,7 @@ logFC_genome = figure(plot_width=config['plots']['logFC_genome_plot']['width'],
                                   max(data[config['files']['ratio_file']['column_names']['log2FC']]) + 1)),
                       title=config['plots']['logFC_genome_plot']['title'] + " (" + title_name + ")" + "\t\tGender: " +
                             str(options.gender) + "\t\tPurity: " + str(options.purity) +
-                            "\t\tPloidy: " + str(options.ploidy))
+                            "\t\tPloidy: " + str(options.ploidy) if config['plots']['logFC_genome_plot']['title'] else "")
 
 if (options.gene_file and config['plots']['logFC_genome_plot']['gene_markers']['visibility'] == "on"):
     logFC_genome.quad(top="logFC",
