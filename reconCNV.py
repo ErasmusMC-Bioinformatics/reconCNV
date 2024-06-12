@@ -1,6 +1,7 @@
 # Loading necessary modules
 # module for retrieving directory name
 import os
+import re
 
 # modules for data manipulation
 import pandas as pd
@@ -14,7 +15,18 @@ import argparse
 
 # modules from the plotting library bokeh
 from bokeh.layouts import row, column, layout
-from bokeh.models import Span, Label, OpenURL, TapTool, NumberFormatter, CustomJS, MultiSelect, DataRange1d
+from bokeh.models import (
+    Span,
+    Label,
+    OpenURL,
+    TapTool,
+    NumberFormatter,
+    CustomJS,
+    MultiSelect,
+    DataRange1d,
+    Range1d,
+    HTMLTemplateFormatter,
+)
 from bokeh.models.widgets import DataTable, TableColumn, Div
 from bokeh.plotting import *
 from bokeh.transform import factor_cmap
@@ -231,6 +243,8 @@ data[config['files']['ratio_file']['column_names']['log2FC']] = np.where(np.logi
 if data.label[0] == "Antitarget" and np.isnan(data[config['files']['ratio_file']['column_names']['log2FC']][0]):
     data.loc[0, config['files']['ratio_file']['column_names']['log2FC']] = 0
     #print("Changing first log2FC value manually to 0! -> related to Bokeh not able to serialize beginning with NaN")
+
+data_y_range_uniq = sorted(set(data[config['files']['ratio_file']['column_names']['log2FC']]))
 
 chr_cumsum = pd.read_csv(options.genome_file, sep=config['files']['genome_file']['field_separator'])
 logging.info("Successfully read the genome file.")
@@ -682,8 +696,10 @@ logFC = figure(plot_width=config['plots']['logFC_ind_plot']['width'],
                #x_range=DataRange1d(bounds='auto'),
                x_range=DataRange1d(bounds=(min(data['ind']) - 0.05 * max(data['ind']),
                                            max(data['ind']) + 0.05 * max(data['ind']))),
-               y_range=DataRange1d(bounds=(min(data[config['files']['ratio_file']['column_names']['log2FC']]) - 1,
-                                           max(data[config['files']['ratio_file']['column_names']['log2FC']]) + 1)))
+               y_range=Range1d(data_y_range_uniq[3] - 0.5,
+                               data_y_range_uniq[-4] + 0.5,
+                               bounds=(min(data[config['files']['ratio_file']['column_names']['log2FC']]) - 1,
+                                       max(data[config['files']['ratio_file']['column_names']['log2FC']]) + 1)))
 
 if (options.gene_file and config['plots']['logFC_ind_plot']['gene_markers']['visibility'] == "on"):
     logFC.quad(top="logFC",
@@ -729,9 +745,10 @@ logFC_genome = figure(plot_width=config['plots']['logFC_genome_plot']['width'],
                       active_tap="auto",
                       x_range=DataRange1d(bounds=(min(data.genome_cumsum) - 0.05 * max(data.genome_cumsum),
                                                   max(data.genome_cumsum) + 0.05 * max(data.genome_cumsum))),
-                      y_range=DataRange1d(
-                          bounds=(min(data[config['files']['ratio_file']['column_names']['log2FC']]) - 1,
-                                  max(data[config['files']['ratio_file']['column_names']['log2FC']]) + 1)),
+                      y_range=Range1d(data_y_range_uniq[3] - 0.05,
+                                      data_y_range_uniq[-4] + 0.05,
+                                      bounds=(min(data[config['files']['ratio_file']['column_names']['log2FC']]) - 1,
+                                              max(data[config['files']['ratio_file']['column_names']['log2FC']]) + 1)),
                       title=config['plots']['logFC_genome_plot']['title'] + " (" + title_name + ")" + "\t\tGender: " +
                             str(options.gender) + "\t\tPurity: " + str(options.purity) +
                             "\t\tPloidy: " + str(options.ploidy) if config['plots']['logFC_genome_plot']['title'] else "")
@@ -962,12 +979,22 @@ if (options.vcf_file and not df_vaf.empty):
     taptool.callback = OpenURL(url=url)
 
 # Setting up data table
+sample = re.sub(r'[a-zA-Z]+$', '', title_name)
+path = r"http://localhost:60151/load?file=//storage.erasmusmc.nl/v/vcl03/MODI/DATA/Moleculair/_Data%20Moleculaire%20Diagnostiek%202024/{sample_id}/{title_name}_ballele.igv,//storage.erasmusmc.nl/v/vcl03/MODI/DATA/Moleculair/_Data%20Moleculaire%20Diagnostiek%202024/{sample_id}/{title_name}_logratio.igv&merge=false"
 columns = [
     TableColumn(field="chrom", title="Chr"),
     TableColumn(field="start", title="Start"),
     TableColumn(field="end", title="End"),
-    TableColumn(field="gene", title="Gene"),
-    TableColumn(field="logFC", title="Log2(FC)", formatter=NumberFormatter(format="0.00")),
+    TableColumn(
+        field="gene",
+        title="Gene",
+        formatter=HTMLTemplateFormatter(
+            template=f"<a href={path}&locus=<%= value %> ><%= value %></a>"
+        ),
+    ),
+    TableColumn(
+        field="logFC", title="Log2(FC)", formatter=NumberFormatter(format="0.00")
+    ),
 ]
 
 data_table_cnr = DataTable(source=source,
