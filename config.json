@@ -13,7 +13,7 @@
             "field_separator": "\t",
 			"off_target_label": "Antitarget",
 			"off_target_low_conf_log2": -10,
-			"weight_scaling_factor": 10
+			"weight_scaling_factor": 12
 		},
 		"genome_file":{
 			"column_names":{
@@ -84,7 +84,7 @@
 			"output_backend": "webgl",
 			"active_scroll": "xwheel_zoom",
 			"title": "Genome Level CNV",
-			"point_line_color": "mediumslateblue",
+			"point_line_color": "darkslateblue",
 			"point_off_target_color": "lightgrey",
 			"point_on_target_color": "lightsteelblue",
 			"segment_markers":{
@@ -95,7 +95,7 @@
 			},
 			"gene_markers":{
 				"visibility": "on",
-				"color": "grey"
+				"color": "violet"
 			},
 			"artifact_mask":{
 				"visibility": "on",
@@ -105,8 +105,7 @@
 			"x_axis_label_visibility": "on",
 			"x_axis_label": "Genome Location",
 			"y_axis_label_visibility": "on",
-			"y_axis_label": "log2(FC)",
-			"y_axis_range": [-20,10]
+			"y_axis_label": "log2(FC)"
 		},
 		"annotation_plot":{
 			"width": 1700,
@@ -135,7 +134,7 @@
 			},
 			"gene_markers":{
 				"visibility": "on",
-				"color": "grey"
+				"color": "violet"
 			},
 			"x_axis_label_visibility": "on",
 			"x_axis_label": "Bin Index",
@@ -172,7 +171,7 @@
 			"output_backend": "webgl",
 			"active_scroll": "xwheel_zoom",
 			"title": "Integer Copy Number",
-			"visibility":"off",
+			"visibility":"on",
 			"segment_markers":{
 				"major_segment_line_color": "black",
 				"minor_segment_line_color": "red",
