@@ -80,32 +80,33 @@
 		"bokeh_js_css_code": "CDN",
 		"logFC_genome_plot":{
 			"width": 1700,
-			"height": 50,
+			"height": 400,
 			"output_backend": "webgl",
 			"active_scroll": "xwheel_zoom",
-			"title": "",
-			"point_line_color": "white",
-			"point_off_target_color": "white",
-			"point_on_target_color": "white",
+			"title": "Genome Level CNV",
+			"point_line_color": "mediumslateblue",
+			"point_off_target_color": "lightgrey",
+			"point_on_target_color": "lightsteelblue",
 			"segment_markers":{
-				"visibility": "off",
+				"visibility": "on",
 				"segment_line_color": "orange",
 				"segment_line_width": 4,
 				"segment_line_alpha": 0.9
 			},
 			"gene_markers":{
-				"visibility": "off",
+				"visibility": "on",
 				"color": "grey"
 			},
 			"artifact_mask":{
-				"visibility": "off",
+				"visibility": "on",
 				"color": "black",
 				"alpha": 0.7
 			},
-			"x_axis_label_visibility": "off",
-			"x_axis_label": "",
-			"y_axis_label_visibility": "off",
-			"y_axis_label": ""
+			"x_axis_label_visibility": "on",
+			"x_axis_label": "Genome Location",
+			"y_axis_label_visibility": "on",
+			"y_axis_label": "log2(FC)",
+			"y_axis_range": [-20,10]
 		},
 		"annotation_plot":{
 			"width": 1700,
