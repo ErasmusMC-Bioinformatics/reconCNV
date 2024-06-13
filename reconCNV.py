@@ -979,8 +979,9 @@ if (options.vcf_file and not df_vaf.empty):
     taptool.callback = OpenURL(url=url)
 
 # Setting up data table
-sample = re.sub(r'[a-zA-Z]+$', '', title_name)
-path = r"http://localhost:60151/load?file=//storage.erasmusmc.nl/v/vcl03/MODI/DATA/Moleculair/_Data%20Moleculaire%20Diagnostiek%202024/{sample_id}/{title_name}_ballele.igv,//storage.erasmusmc.nl/v/vcl03/MODI/DATA/Moleculair/_Data%20Moleculaire%20Diagnostiek%202024/{sample_id}/{title_name}_logratio.igv&merge=false"
+sample_id = re.sub(r"[a-zA-Z]+$", "", title_name)
+sample_year = re.sub(r"^M([0-9]{2}).*", "20\\1", title_name)
+path = f"http://localhost:60151/load?file=//storage.erasmusmc.nl/v/vcl03/MODI/DATA/Moleculair/_Data%20Moleculaire%20Diagnostiek%20{sample_year}/{sample_id}/{title_name}_ballele.igv,//storage.erasmusmc.nl/v/vcl03/MODI/DATA/Moleculair/_Data%20Moleculaire%20Diagnostiek%202024/{sample_id}/{title_name}_logratio.igv&merge=false"
 columns = [
     TableColumn(field="chrom", title="Chr"),
     TableColumn(field="start", title="Start"),
